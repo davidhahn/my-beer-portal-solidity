@@ -18,6 +18,8 @@ contract BeerPortal {
 
     Beer[] beers; // Array of Beer struct called beers
 
+    mapping(address => uint256) public lastBeeredAt;
+
     constructor() payable {
         console.log(unicode"🍺🍻, I am a contract and I am smart");
 
@@ -25,6 +27,12 @@ contract BeerPortal {
     }
 
     function receiveBeer(string memory _message) public {
+        require(
+            lastBeeredAt[msg.sender] + 15 minutes < block.timestamp,
+            "Wait 15 minutes"
+        );
+        lastBeeredAt[msg.sender] = block.timestamp;
+
         totalBeer += 1;
         console.log(
             "%s has given you beer with message %s",
