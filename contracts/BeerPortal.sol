@@ -6,6 +6,7 @@ import "hardhat/console.sol";
 
 contract BeerPortal {
     uint256 totalBeer;
+    uint256 private seed;
 
     event NewBeer(address indexed from, string message, uint256 timestamp);
 
@@ -19,6 +20,8 @@ contract BeerPortal {
 
     constructor() payable {
         console.log(unicode"🍺🍻, I am a contract and I am smart");
+
+        seed = (block.timestamp + block.difficulty) % 100;
     }
 
     function receiveBeer(string memory _message) public {
@@ -31,15 +34,21 @@ contract BeerPortal {
 
         beers.push(Beer(msg.sender, _message, block.timestamp));
 
-        emit NewBeer(msg.sender, _message, block.timestamp);
+        seed = (block.difficulty + block.timestamp + seed) % 100;
 
-        uint256 beerMoney = 0.0001 ether;
-        require(
-            beerMoney <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
-        );
-        (bool success, ) = (msg.sender).call{value: beerMoney}("");
-        require(success, "Failed to withdraw beer money from contract.");
+        console.log("Random # generated: %d", seed);
+
+        if (seed <= 50) {
+            uint256 beerMoney = 0.0001 ether;
+            require(
+                beerMoney <= address(this).balance,
+                "Trying to withdraw more money than the contract has."
+            );
+            (bool success, ) = (msg.sender).call{value: beerMoney}("");
+            require(success, "Failed to withdraw beer money from contract.");
+        }
+
+        emit NewBeer(msg.sender, _message, block.timestamp);
     }
 
     function getAllBeers() public view returns (Beer[] memory) {

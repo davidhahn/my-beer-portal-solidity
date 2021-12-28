@@ -44,10 +44,37 @@ const checkBalance = async () => {
   console.log(allBeers);
 };
 
+const winPrize = async () => {
+  const beerContractFactory = await hre.ethers.getContractFactory('BeerPortal');
+  const beerContract = await beerContractFactory.deploy({
+    value: hre.ethers.utils.parseEther("0.1"),
+  });
+  await beerContract.deployed();
+
+  console.log("Contract deployed to:", beerContract.address);
+
+  let contractBalance = await hre.ethers.provider.getBalance(beerContract.address);
+  console.log('Contract balance:', hre.ethers.utils.formatEther(contractBalance));
+
+  const beerTxn = await beerContract.receiveBeer('This is beer #1');
+  await beerTxn.wait();
+
+  const beerTxn2 = await beerContract.receiveBeer('This is beer #2');
+  await beerTxn2.wait();
+
+  contractBalance = await hre.ethers.provider.getBalance(beerContract.address);
+  console.log('Contract balance:', hre.ethers.utils.formatEther(contractBalance));
+
+  const allBeers = await beerContract.getAllBeers();
+  console.log(allBeers);
+
+};
+
 const runMain = async () => {
   try {
     await main();
     await checkBalance();
+    await winPrize();
     process.exit(0);
   } catch (error) {
     console.log(error);
