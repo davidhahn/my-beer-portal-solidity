@@ -28,8 +28,8 @@ contract BeerPortal {
 
     function receiveBeer(string memory _message) public {
         require(
-            lastBeeredAt[msg.sender] + 15 minutes < block.timestamp,
-            "Wait 15 minutes"
+            lastBeeredAt[msg.sender] + 60 seconds < block.timestamp,
+            "Wait 60 seconds"
         );
         lastBeeredAt[msg.sender] = block.timestamp;
 

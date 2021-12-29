@@ -7,7 +7,7 @@ const main = async () => {
 
   const beerContractFactory = await hre.ethers.getContractFactory('BeerPortal');
   const portal = await beerContractFactory.deploy({
-    value: hre.ethers.utils.parseEther('0.001'),
+    value: hre.ethers.utils.parseEther('0.01'),
   });
   await portal.deployed();
 
